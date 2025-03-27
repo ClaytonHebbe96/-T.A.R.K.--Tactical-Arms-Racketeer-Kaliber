@@ -1,5 +1,5 @@
-export enum NewItemIds 
-{
+/* eslint-disable @typescript-eslint/brace-style */
+export enum NewItemIds {
     GLOCK_BASE = "66eeef3b2a166b73d2066a74",
     GLOCK_BARREL = "66eeef3b2a166b73d2066a75",
     GLOCK_RECIEVER = "66eeef3b2a166b73d2066a76",
