@@ -88,10 +88,12 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
         // Add trader to flea market
         if (addToFlea)
         {
+            if (Tark.config.debugLogging) logger.log(`[${this.mod}] Trader added to Flea Market.`, "green");
             ragfairConfig.traders[baseJson._id] = true;
         }
         else
         {
+            if (Tark.config.debugLogging) logger.log(`[${this.mod}] Trader removed from Flea Market.`, "red");
             ragfairConfig.traders[baseJson._id] = false;
         }
 
