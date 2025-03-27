@@ -30,6 +30,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
     private traderHelper: TraderHelper;
     private fluentAssortCreator: FluentAssortCreator;
 
+    private traderBase;
     private traderNickname: string;
 
     constructor() 
