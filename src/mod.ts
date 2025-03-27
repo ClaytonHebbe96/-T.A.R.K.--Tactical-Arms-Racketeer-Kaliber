@@ -1,4 +1,4 @@
-import { container, DependencyContainer } from "tsyringe";
+import { DependencyContainer } from "tsyringe";
 
 // SPT Types
 import { IPreSptLoadMod } from "@spt/models/external/IPreSptLoadMod";
@@ -11,8 +11,6 @@ import { ConfigServer } from "@spt/servers/ConfigServer";
 import { ConfigTypes } from "@spt/models/enums/ConfigTypes";
 import { ITraderConfig } from "@spt/models/spt/config/ITraderConfig";
 import { IRagfairConfig } from "@spt/models/spt/config/IRagfairConfig";
-import { DynamicRouterModService } from "@spt/services/mod/dynamicRouter/DynamicRouterModService";
-import { RandomUtil } from "@spt/utils/RandomUtil";
 import { JsonUtil } from "@spt/utils/JsonUtil";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -25,7 +23,6 @@ import { FluentAssortConstructor as FluentAssortCreator } from "./fluentTraderAs
 import { Money } from "@spt/models/enums/Money";
 import { Traders } from "@spt/models/enums/Traders";
 import { HashUtil } from "@spt/utils/HashUtil";
-import { RagfairOfferGenerator } from "@spt/generators/RagfairOfferGenerator";
 import { ItemHelper } from "@spt/helpers/ItemHelper";
 import { BaseClasses } from "@spt/models/enums/BaseClasses";
 
@@ -53,13 +50,10 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
         const logger = container.resolve<ILogger>("WinstonLogger");
         const preSptModLoader: PreSptModLoader = container.resolve<PreSptModLoader>("PreSptModLoader");
         const imageRouter: ImageRouter = container.resolve<ImageRouter>("ImageRouter");
-        const databaseService: DatabaseService = container.resolve<DatabaseService>("DatabaseService");
         const hashUtil: HashUtil = container.resolve<HashUtil>("HashUtil");
         const configServer = container.resolve<ConfigServer>("ConfigServer");
         const traderConfig: ITraderConfig = configServer.getConfig<ITraderConfig>(ConfigTypes.TRADER);
         const ragfairConfig = configServer.getConfig<IRagfairConfig>(ConfigTypes.RAGFAIR);
-        const dynamicRouterModService = container.resolve<DynamicRouterModService>("DynamicRouterModService");
-        const ragfairOfferGenerator = container.resolve<RagfairOfferGenerator>("RagfairOfferGenerator");
 
         // Load config file before accessing it
         Tark.config = JSON.parse(fs.readFileSync(Tark.configPath, "utf-8"));
@@ -101,41 +95,6 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
             ragfairConfig.traders[baseJson._id] = false;
         }
 
-        dynamicRouterModService.registerDynamicRouter(
-            "TarkRefreshStock",
-            [
-                {
-                    url: "/client/items/prices/66eeef8b2a166b73d2066a7e",
-                    action: async (url, info, sessionId, output) =>
-                    {
-                        const trader = databaseService.getTables().traders["66eeef8b2a166b73d2066a7e"];
-                        const assortItems = trader.assort.items;
-
-                        let updateFleaOffers = false;
-                        if (Tark.config.randomizeBuyRestriction)
-                        {
-                            if (Tark.config.debugLogging) logger.info(`[${this.mod}] Refreshing Kaliber Stock with Randomized Buy Restrictions.`);
-
-                            updateFleaOffers = true;
-                            this.randomizeBuyRestriction(assortItems);
-                        }
-                        if (Tark.config.randomizeStockAvailable)
-                        {
-                            if (Tark.config.debugLogging) logger.info(`[${this.mod}] Refreshing Kaliber Stock with Randomized Stock Availability.`);
-
-                            updateFleaOffers = true;
-                            this.randomizeStockAvailable(assortItems);
-                        }
-
-                        if (updateFleaOffers) ragfairOfferGenerator.generateFleaOffersForTrader("66eeef8b2a166b73d2066a7e");
-
-                        return output;
-                    }
-                }
-            ],
-            "spt"
-        );
-
         if (Tark.config.debugLogging) logger.log(`[${this.mod}] preSpt Loaded`, "green");
     }
 
@@ -168,14 +127,36 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
 
         // Get all items in the database as an array so we can loop over them to find the ones that we want
         const items = Object.values(tables.templates.items)
-
-        //  Get all items we want to sell (e.g. all ammos and all grenades)
-        const assortItems = items.filter(x => itemHelper.isOfBaseclass(x._id, BaseClasses.AMMO || BaseClasses.THROW_WEAPON));
-
-        // Iterate through newly created assortItems, set prices, and push to assort
-        for (const itemID in assortItems)
+        // Blacklist consists of obscure shrapnel items that the trader doesn't need to sell as they are not usable.
+        const blacklistedItems = [
+            "5943d9c186f7745a13413ac9",
+            "67654a6759116d347b0bfb86",
+            "5996f6cb86f774678763a6ca",
+            "5996f6fc86f7745e585b4de3",
+            "66ec2aa6daf127599c0c31f1",
+            "63b35f281745dd52341e5da7",
+            "5996f6d686f77467977ba6cc"
+        ]
+        const ammo = items.filter(x => itemHelper.isOfBaseclass(x._id, BaseClasses.AMMO));
+        const grenades = items.filter(x => itemHelper.isOfBaseclass(x._id, BaseClasses.THROW_WEAPON));
+        const ammoAndGrenades = [...ammo, ...grenades];
+        const ammoAndGrenadeIds = [];
+        for (const ammoOrGrenade of ammoAndGrenades)
         {
-            let price = priceTable[itemID] * Tark.config.itemPriceMultiplier;
+            if (ammoOrGrenade._id)
+            {
+                ammoAndGrenadeIds.push(ammoOrGrenade._id);
+            }
+        }
+
+        for (const itemID of ammoAndGrenadeIds)
+        {
+            if (blacklistedItems.includes(itemID))
+            {
+                if (Tark.config.debugLogging) logger.log(`[${this.mod}] ItemID: ${itemID} is blacklisted`, "red");
+                continue;
+            }
+            let price = (priceTable[itemID] * Tark.config.itemPriceMultiplier);
             if (!price)
             {
                 price = (handbookTable.Items.find(x => x.Id === itemID)?.Price ?? 1) * Tark.config.itemPriceMultiplier;
@@ -185,6 +166,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
                 .addMoneyCost(Money.ROUBLES, Math.round(price))
                 .addLoyaltyLevel(1)
                 .export(tables.traders[baseJson._id])
+            if (Tark.config.debugLogging) logger.log("ItemID: " + itemID + " for price: " + Math.round(price), "cyan");
         }
 
         //Add glock as a money purchase
@@ -210,47 +192,6 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
         const timeTaken = performance.now() - start;
         if (Tark.config.debugLogging) logger.log(`[${this.mod}] postDb Loaded: Assort generation took ${timeTaken.toFixed(3)}ms.`, "green");
 
-    }
-    private randomizeBuyRestriction(assortItemTable)
-    {
-        const randomUtil: RandomUtil = container.resolve<RandomUtil>("RandomUtil");
-        // Randomize Assort Availability via config bool for server start
-        for (const item in assortItemTable)
-        {
-            assortItemTable[item].upd.BuyRestrictionMax = 10;
-            const itemID = assortItemTable[item]._id;
-            const newRestricion = Math.round(randomUtil.randInt(1, 10));
-
-            assortItemTable[item].upd.BuyRestriction = newRestricion;
-
-            if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] Item: [${itemID}] Buy Restriction Changed to: [${newRestricion}]`, "cyan");
-        }
-    }
-    private randomizeStockAvailable(assortItemTable)
-    {
-        const randomUtil: RandomUtil = container.resolve<RandomUtil>("RandomUtil");
-        for (const item in assortItemTable)
-        {
-            const itemID = assortItemTable[item]._id;
-            assortItemTable[item].upd.UnlimitedCount = false;
-            assortItemTable[item].upd.StackObjectsCount = 25;
-
-            const outOfStockRoll = randomUtil.getChance100(Tark.config.outOfStockChance);
-
-            if (outOfStockRoll)
-            {
-                assortItemTable[item].upd.StackObjectsCount = 0;
-
-                if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] Item: [${itemID}] Marked out of stock`, "cyan");
-            }
-            else
-            {
-                const newStock = randomUtil.randInt(1, 25);
-                assortItemTable[item].upd.StackObjectsCount = newStock;
-
-                if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] Item: [${itemID}] Stock Count changed to: [${newStock}]`, "cyan");
-            }
-        }
     }
 }
 
