@@ -6,9 +6,5 @@
 
     "addTraderToFlea": true,
 
-    "randomizeBuyRestriction": false,
-    "randomizeStockAvailable": false,
-    "outOfStockChance": 10,
-
-    "debugLogging": false
+    "debugLogging": true
 }
