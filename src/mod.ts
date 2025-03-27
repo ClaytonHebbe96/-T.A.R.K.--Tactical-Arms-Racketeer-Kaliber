@@ -148,7 +148,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
         Tark.config = JSON.parse(fs.readFileSync(Tark.configPath, "utf-8"));
 
         // Resolve SPT classes we'll use
-        const logger = container.resolve<ILogger>("WintsonLogger");
+        const logger = container.resolve<ILogger>("WinstonLogger");
         const databaseService: DatabaseService = container.resolve<DatabaseService>("DatabaseService");
         const jsonUtil: JsonUtil = container.resolve<JsonUtil>("JsonUtil");
         const priceTable = databaseService.getTables().templates.prices;
