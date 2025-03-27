@@ -49,11 +49,8 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
      */
     public preSptLoad(container: DependencyContainer): void 
     {
-        // Get a logger
-        this.logger = container.resolve<ILogger>("WinstonLogger");
-        if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] preSpt Loading...`, "yellow");
-
         // Get SPT code/data we need later
+        const logger = container.resolve<ILogger>("WinstonLogger");
         const preSptModLoader: PreSptModLoader = container.resolve<PreSptModLoader>("PreSptModLoader");
         const imageRouter: ImageRouter = container.resolve<ImageRouter>("ImageRouter");
         const databaseService: DatabaseService = container.resolve<DatabaseService>("DatabaseService");
@@ -66,6 +63,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
 
         // Load config file before accessing it
         Tark.config = JSON.parse(fs.readFileSync(Tark.configPath, "utf-8"));
+        if (Tark.config.debugLogging) logger.log(`[${this.mod}] preSpt Loading...`, "yellow");
 
         // Set config values to local variables for validation and use
         let minRefresh = Tark.config.traderRefreshMin;
@@ -75,13 +73,13 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
         {
             minRefresh = 1800;
             maxRefresh = 3600;
-            this.logger.error(`[${this.mod}] [CONFIG] traderRefreshMin must be less than traderRefreshMax. Refresh timers have been reset to default`);
+            logger.error(`[${this.mod}] [CONFIG] traderRefreshMin must be less than traderRefreshMax. Refresh timers have been reset to default`);
         }
         if (maxRefresh <= 2)
         {
             minRefresh = 1800;
             maxRefresh = 3600;
-            this.logger.error(`[${this.mod}] [CONFIG] You set traderRefreshMax too low. Refresh timers have been reset to default.`);
+            logger.error(`[${this.mod}] [CONFIG] You set traderRefreshMax too low. Refresh timers have been reset to default.`);
         }
 
         // Create helper class and use it to register our traders image/icon + set its stock refresh time
@@ -116,14 +114,14 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
                         let updateFleaOffers = false;
                         if (Tark.config.randomizeBuyRestriction)
                         {
-                            if (Tark.config.debugLogging) this.logger.info(`[${this.mod}] Refreshing Kaliber Stock with Randomized Buy Restrictions.`);
+                            if (Tark.config.debugLogging) logger.info(`[${this.mod}] Refreshing Kaliber Stock with Randomized Buy Restrictions.`);
 
                             updateFleaOffers = true;
                             this.randomizeBuyRestriction(assortItems);
                         }
                         if (Tark.config.randomizeStockAvailable)
                         {
-                            if (Tark.config.debugLogging) this.logger.info(`[${this.mod}] Refreshing Kaliber Stock with Randomized Stock Availability.`);
+                            if (Tark.config.debugLogging) logger.info(`[${this.mod}] Refreshing Kaliber Stock with Randomized Stock Availability.`);
 
                             updateFleaOffers = true;
                             this.randomizeStockAvailable(assortItems);
@@ -138,7 +136,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
             "spt"
         );
 
-        if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] preSpt Loaded`, "green");
+        if (Tark.config.debugLogging) logger.log(`[${this.mod}] preSpt Loaded`, "green");
     }
 
     /**
@@ -147,14 +145,16 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
      */
     public postDBLoad(container: DependencyContainer): void 
     {
-        if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] postDb Loading...`, "yellow");
         Tark.config = JSON.parse(fs.readFileSync(Tark.configPath, "utf-8"));
 
         // Resolve SPT classes we'll use
+        const logger = container.resolve<ILogger>("WintsonLogger");
         const databaseService: DatabaseService = container.resolve<DatabaseService>("DatabaseService");
         const jsonUtil: JsonUtil = container.resolve<JsonUtil>("JsonUtil");
         const priceTable = databaseService.getTables().templates.prices;
         const handbookTable = databaseService.getTables().templates.handbook;
+
+        if (Tark.config.debugLogging) logger.log(`[${this.mod}] postDb Loading...`, "yellow");
 
         // Get a reference to the database tables
         const tables = databaseService.getTables();
@@ -208,7 +208,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
             "This is Kaliber's shop");
         
         const timeTaken = performance.now() - start;
-        if (Tark.config.debugLogging) this.logger.log(`[${this.mod}] postDb Loaded: Assort generation took ${timeTaken.toFixed(3)}ms.`, "green");
+        if (Tark.config.debugLogging) logger.log(`[${this.mod}] postDb Loaded: Assort generation took ${timeTaken.toFixed(3)}ms.`, "green");
 
     }
     private randomizeBuyRestriction(assortItemTable)
