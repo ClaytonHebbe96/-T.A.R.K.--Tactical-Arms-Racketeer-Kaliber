@@ -1,5 +1,5 @@
 {
-    "_id": "67e364a0625e71fbf531678d",
+    "_id": "66eeef8b2a166b73d2066a7e",
     "working": true,
     "availableInRaid": false,
     "items_buy": {
@@ -9,7 +9,7 @@
         ],
         "id_list": []
     },
-    "item_buy_prohibited": {
+    "items_buy_prohibited": {
         "category": [],
         "id_list": []
     },
