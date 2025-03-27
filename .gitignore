@@ -1,3 +1,9 @@
+.buildignore
+.eslintignore
+.eslintrc.json
+.build.mjs
+.package-lock.json
+.tsconfig.json
 res/OldKaliber.jpg
 dist
 node_modules
