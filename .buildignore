@@ -12,9 +12,9 @@
 /.vscode
 /build.mjs
 /dist
-/images
 /mod.code-workspace
 /node_modules
 /package-lock.json
+/res/OldKaliber.jpg
 /tsconfig.json
 /types
