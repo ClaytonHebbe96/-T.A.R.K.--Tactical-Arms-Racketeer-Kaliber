@@ -1,0 +1,14 @@
+{
+    "itemPriceMultiplier": 1,
+
+    "traderRefreshMin": 1800,
+    "traderRefreshMax": 3600,
+
+    "addTraderToFlea": true,
+
+    "randomizeBuyRestriction": false,
+    "randomizeStockAvailable": false,
+    "outOfStockChance": 10,
+
+    "debugLogging": false
+}
