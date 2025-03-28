@@ -168,7 +168,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
                 .addMoneyCost(Money.ROUBLES, Math.round(price))
                 .addLoyaltyLevel(1)
                 .export(tables.traders[baseJson._id])
-            if (Tark.config.debugLogging) logger.log(itemID.name + "is now selling for: " + Math.round(price) + " Roubles.", "cyan");
+            if (Tark.config.debugLogging) logger.log("ItemID: " + itemID + " for price " + Math.round(price), "cyan");
         }
 
         //Add glock as a money purchase
