@@ -6,7 +6,7 @@ import { ITraderConfig, IUpdateTime } from "@spt/models/spt/config/ITraderConfig
 import { IDatabaseTables } from "@spt/models/spt/server/IDatabaseTables";
 import { ImageRouter } from "@spt/routers/ImageRouter";
 import { JsonUtil } from "@spt/utils/JsonUtil";
-import { NewItemIds } from "./newItemIds";
+// import { NewItemIds } from "./newItemIds";
 
 export class TraderHelper 
 {
@@ -86,79 +86,79 @@ export class TraderHelper
 
     // Item collection would go here if we want to add in the future. for now we will use the glock example from the mod-examples repo
     
-    /**
-     * Create a weapon from scratch, ready to be added to the trader
-     * @returns Item[]
-     */
-    public createGlock(): IItem[] 
-    {
-        // Create an array ready to hold weapon + all mods
-        const glock: IItem[] = [];
+    // /**
+    //  * Create a weapon from scratch, ready to be added to the trader
+    //  * @returns Item[]
+    //  */
+    // public createGlock(): IItem[] 
+    // {
+    //     // Create an array ready to hold weapon + all mods
+    //     const glock: IItem[] = [];
 
-        // Add the base first
-        glock.push({// Add the base weapon first
-            _id: NewItemIds.GLOCK_BASE, // Ids matter,  MUST BE UNIQUE See Mod.ts for more details
-            _tpl: "5a7ae0c351dfba0017554310" // This is the weapon tpl, found on: https://db.sp-tarkov.com/search                
-        });
+    //     // Add the base first
+    //     glock.push({// Add the base weapon first
+    //         _id: NewItemIds.GLOCK_BASE, // Ids matter,  MUST BE UNIQUE See Mod.ts for more details
+    //         _tpl: "5a7ae0c351dfba0017554310" // This is the weapon tpl, found on: https://db.sp-tarkov.com/search                
+    //     });
 
-        // Add barrel
-        glock.push({
-            _id: NewItemIds.GLOCK_BARREL,
-            _tpl: "5a6b60158dc32e000a31138b",
-            parentId: NewItemIds.GLOCK_BASE, // This is a sub item, you need to define its parent its attached/inserted into
-            slotId: "mod_barrel" // Required for mods, you need to define what 'slot' the mod will fill on the weapon
-        });
+    //     // Add barrel
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_BARREL,
+    //         _tpl: "5a6b60158dc32e000a31138b",
+    //         parentId: NewItemIds.GLOCK_BASE, // This is a sub item, you need to define its parent its attached/inserted into
+    //         slotId: "mod_barrel" // Required for mods, you need to define what 'slot' the mod will fill on the weapon
+    //     });
 
-        // Add receiver
-        glock.push({
-            _id: NewItemIds.GLOCK_RECIEVER,
-            _tpl: "5a9685b1a2750c0032157104",
-            parentId: NewItemIds.GLOCK_BASE,
-            slotId: "mod_reciever"
-        });
+    //     // Add receiver
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_RECIEVER,
+    //         _tpl: "5a9685b1a2750c0032157104",
+    //         parentId: NewItemIds.GLOCK_BASE,
+    //         slotId: "mod_reciever"
+    //     });
 
-        // Add compensator
-        glock.push({
-            _id: NewItemIds.GLOCK_COMPENSATOR,
-            _tpl: "5a7b32a2e899ef00135e345a",
-            parentId: NewItemIds.GLOCK_BASE,
-            slotId: "mod_muzzle"
-        });
+    //     // Add compensator
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_COMPENSATOR,
+    //         _tpl: "5a7b32a2e899ef00135e345a",
+    //         parentId: NewItemIds.GLOCK_BASE,
+    //         slotId: "mod_muzzle"
+    //     });
 
-        // Add pistol grip
-        glock.push({
-            _id: NewItemIds.GLOCK_PISTOL_GRIP,
-            _tpl: "5a7b4960e899ef197b331a2d",
-            parentId: NewItemIds.GLOCK_BASE,
-            slotId: "mod_pistol_grip"
-        });
+    //     // Add pistol grip
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_PISTOL_GRIP,
+    //         _tpl: "5a7b4960e899ef197b331a2d",
+    //         parentId: NewItemIds.GLOCK_BASE,
+    //         slotId: "mod_pistol_grip"
+    //     });
 
-        // Add front sight
-        glock.push({
-            _id: NewItemIds.GLOCK_FRONT_SIGHT,
-            _tpl: "5a6f5d528dc32e00094b97d9",
-            parentId: NewItemIds.GLOCK_BASE,
-            slotId: "mod_sight_front"
-        });
+    //     // Add front sight
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_FRONT_SIGHT,
+    //         _tpl: "5a6f5d528dc32e00094b97d9",
+    //         parentId: NewItemIds.GLOCK_BASE,
+    //         slotId: "mod_sight_front"
+    //     });
 
-        // Add rear sight
-        glock.push({
-            _id: NewItemIds.GLOCK_REAR_SIGHT,
-            _tpl: "5a6f58f68dc32e000a311390",
-            parentId: NewItemIds.GLOCK_BASE,
-            slotId: "mod_sight_rear"
-        })
+    //     // Add rear sight
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_REAR_SIGHT,
+    //         _tpl: "5a6f58f68dc32e000a311390",
+    //         parentId: NewItemIds.GLOCK_BASE,
+    //         slotId: "mod_sight_rear"
+    //     })
 
-        // Add magazine
-        glock.push({
-            _id: NewItemIds.GLOCK_MAGAZINE,
-            _tpl: "630769c4962d0247b029dc60",
-            parentId: NewItemIds.GLOCK_BASE,
-            slotId: "mod_magazine"
-        });
+    //     // Add magazine
+    //     glock.push({
+    //         _id: NewItemIds.GLOCK_MAGAZINE,
+    //         _tpl: "630769c4962d0247b029dc60",
+    //         parentId: NewItemIds.GLOCK_BASE,
+    //         slotId: "mod_magazine"
+    //     });
 
-        return glock;
-    }
+    //     return glock;
+    // }
 
     /**
      * Add trader's name/location/description to the locale table
