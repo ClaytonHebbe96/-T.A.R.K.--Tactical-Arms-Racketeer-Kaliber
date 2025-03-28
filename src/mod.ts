@@ -171,14 +171,16 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
             if (Tark.config.debugLogging) logger.log("ItemID: " + itemID + " for price " + Math.round(price), "cyan");
         }
 
-        //Add glock as a money purchase
-        this.fluentAssortCreator
-            .createComplexAssortItem(this.traderHelper.createGlock())
-            .addUnlimitedStackCount()
-            .addMoneyCost(Money.ROUBLES, 15000)
-            .addBuyRestriction(10)
-            .addLoyaltyLevel(1)
-            .export(tables.traders[baseJson._id]);
+        // Will use this later when adding Weapons to trader assort
+
+        // //Add glock as a money purchase
+        // this.fluentAssortCreator
+        //     .createComplexAssortItem(this.traderHelper.createGlock())
+        //     .addUnlimitedStackCount()
+        //     .addMoneyCost(Money.ROUBLES, 15000)
+        //     .addBuyRestriction(10)
+        //     .addLoyaltyLevel(1)
+        //     .export(tables.traders[baseJson._id]);
 
         // Add trader to locale file, ensures trader text shows properly on screen
         // WARNING: adds the same text to ALL locales (e.g. chines/french/english)
@@ -199,12 +201,7 @@ class Tark implements IPreSptLoadMod, IPostDBLoadMod
 
 interface Config
 {
-    useBarters: boolean,
-    useFleaPrices: boolean,
     itemPriceMultiplier: number,
-    randomizeStockAvailable: boolean,
-    outOfStockChance: number,
-    randomizeBuyRestriction: boolean,
     traderRefreshMin: number,
     traderRefreshMax: number,
     addTraderToFlea: boolean,
