@@ -1,10 +1,7 @@
 {
     "itemPriceMultiplier": 1,
-
     "traderRefreshMin": 1800,
     "traderRefreshMax": 3600,
-
     "addTraderToFlea": true,
-
-    "debugLogging": true
+    "debugLogging": false
 }
