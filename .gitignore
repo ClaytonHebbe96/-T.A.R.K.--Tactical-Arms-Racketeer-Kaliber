@@ -8,3 +8,4 @@ res/OldKaliber.jpg
 dist
 node_modules
 types
+src/newItemIds.ts
