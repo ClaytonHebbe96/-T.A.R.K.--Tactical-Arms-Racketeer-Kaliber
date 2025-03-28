@@ -46,7 +46,7 @@ This section will describe the options for trader customization in `'./config.js
 
 1. **itemPriceMultiplier:**
 
-    - Number each items price is multiplied by. 0 being free, and 1 being base game price. **Default: 1** <br>
+    - Number each items price is multiplied by. 0.01 being the lowest possible value (Super Cheap), and 1 being base game price. **Default: 1** <br>
 
 2. **traderRefreshMin:**
 
